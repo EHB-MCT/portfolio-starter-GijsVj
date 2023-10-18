@@ -39,6 +39,17 @@ app.get('/artworks/:id', (req, res) => {
       .catch((error) => res.status(500).json({ error }));
   });
 
+  // Update an artwork
+app.put('/artworks/:id', (req, res) => {
+  const { title, artist_uuid, image_url, location_geohash } = req.body;
+
+  db('artworks')
+    .where({ id: req.params.id })
+    .update({ title, artist_uuid, image_url, location_geohash })
+    .then(() => res.status(200).json({ message: 'Artwork updated successfully' }))
+    .catch((error) => res.status(500).json({ error }));
+});
+
 // Start the server
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
