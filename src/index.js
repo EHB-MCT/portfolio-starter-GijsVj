@@ -22,6 +22,23 @@ app.post('/artworks', (req, res) => {
     .catch((error) => res.status(500).json({ error }));
 });
 
+// Read all artworks
+app.get('/artworks', (req, res) => {
+  db('artworks')
+    .select()
+    .then((artworks) => res.status(200).json(artworks))
+    .catch((error) => res.status(500).json({ error }));
+});
+
+// Read artwork by id
+app.get('/artworks/:id', (req, res) => {
+    db('artworks')
+      .where({ id: req.params.id })
+      .select()
+      .then((artworks) => res.status(200).json(artworks))
+      .catch((error) => res.status(500).json({ error }));
+  });
+
 // Start the server
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
