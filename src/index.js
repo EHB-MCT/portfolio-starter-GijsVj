@@ -50,6 +50,15 @@ app.put('/artworks/:id', (req, res) => {
     .catch((error) => res.status(500).json({ error }));
 });
 
+// Delete an artwork
+app.delete('/artworks/:id', (req, res) => {
+  db('artworks')
+    .where({ id: req.params.id })
+    .del()
+    .then(() => res.status(204).send())
+    .catch((error) => res.status(500).json({ error }));
+});
+
 // Start the server
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
