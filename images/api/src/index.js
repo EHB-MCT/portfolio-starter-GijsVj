@@ -3,6 +3,8 @@ const bodyParser = require('body-parser');
 const knex = require('knex');
 const knexConfig = require('./db/knexfile');
 
+const {checkArtworkTitle} = require("./../helpers/endpointHelpers.js")
+
 const app = express();
 const port = process.env.PORT || 3000;
 
@@ -15,11 +17,15 @@ const db = knex(knexConfig.development);
 // Create an artwork
 app.post('/artworks', (req, res) => {
   const { title, artist_uuid, image_url, location_geohash } = req.body;
-
-  db('artworks')
-    .insert({ title, artist_uuid, image_url, location_geohash })
-    .then(() => res.status(201).json({ message: 'Artwork created successfully' }))
-    .catch((error) => res.status(500).json({ error }));
+  if(checkArtworkTitle(artwork.title)){
+    db('artworks')
+      .insert({ title, artist_uuid, image_url, location_geohash })
+      .then(() => res.status(201).json({ message: 'Artwork created successfully' }))
+      
+      .catch((error) => res.status(500).json({ error }));
+  } else {
+      res.status(401).send({message: "name not formatted correctly"});
+  }
 });
 
 // Read all artworks
