@@ -1,5 +1,5 @@
 
-const {checkArtworkTitle} = require("../helpers/endpointHelpers.js");
+const {checkArtworkTitle} = require("../../helpers/endpointHelpers.js");
 
 /* 
 table.increments('id').primary();
