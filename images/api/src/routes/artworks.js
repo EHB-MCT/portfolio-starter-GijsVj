@@ -29,20 +29,24 @@ router.get('/', (req, res) => {
 // Read artwork by id
 router.get('/:id', (req, res) => {
   const id = parseInt(req.params.id);
-  db('artworks')
-    .where({ id })
-    .first()
-    .then((artwork) => {
-      if (artwork) {
-        res.json(artwork).status(200);
-      } else {
-        res.status(404).json({ error: 'Artwork not found' });
-      }
-    })
-    .catch((error) => {
-      console.error(error);
-      res.status(500).json({ error: 'An error occurred while fetching artwork', e: error });
-    });
+  if (id >= 0 && typeof(id) == 'number') {
+    db('artworks')
+      .where({ id })
+      .first()
+      .then((artwork) => {
+        if (artwork) {
+          res.json(artwork).status(200);
+        } else {
+          res.status(404).json({ error: 'Artwork not found' });
+        }
+      })
+      .catch((error) => {
+        console.error(error);
+        res.status(500).json({ error: 'An error occurred while fetching artwork', e: error });
+      });
+  } else {
+    res.status(401).json({ error: 'negative id provided'})
+  }
 });
 
 // Update an artwork
