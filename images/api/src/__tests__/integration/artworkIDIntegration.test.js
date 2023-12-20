@@ -1,34 +1,39 @@
 const request = require('supertest');
-const app = require('./../../app.js');
-const knexfile = require('./../../db/knexfile.js');
+const app = require('../../app.js');
+const { v4: uuidv4 } = require("uuid")
+const knexfile = require('../../db/knexfile.js');
 const db = require("knex")(knexfile.development);
 
+const ARTISTUUID = uuidv4();
 const exampleArtwork = {
   id: 1,
   title: 'Mona Lisa',
-  artist_uuid: 'cefb6310-8d82-4d7a-b84a-26d18db53819',
+  artist_uuid: ARTISTUUID,
   image_url: 'https://example.com/mona_lisa.jpg',
   location_geohash: 'u4pruydqqw43'
 };
 
-/* const exampleArtist = {
-  uuid: 'cefb6310-8d82-4d7a-b84a-26d18db53819',
+const exampleArtist = {
+  uuid: ARTISTUUID,
   artist: 'Leonardo da Vinci',
-  birthyear: '1452',
-  artwork_count: '20'
-}; */
+  birthyear: 1452,  // Note: Use a number instead of a string for numeric values
+  artwork_count: 20
+};
 describe('GET /artworks/:id', () => {
-    beforeAll(async () => {
-        // console.log(db); // Check if db.knex is defined
-        const inserted = await db("artworks").insert(exampleArtwork).returning("*");
-        exampleArtwork.id = inserted[0].id
-        
-      });
-      
-      afterAll(async () => {
-        await db("artworks").del().where({id: exampleArtwork.id})
-        await db.destroy();
-      });
+  beforeAll(async () => {
+    // Clean up: Delete the test record from the database after the test
+    insertedArtist = await db('artists').insert(exampleArtist).returning("*");
+    insertedRecord = await db('artworks').insert({...exampleArtwork}).returning("*");
+    exampleArtwork.id = insertedRecord[0].id
+
+  });
+
+  afterAll(async () => {
+    // Clean up: Delete the test record from the database after the test
+    await db('artworks').where({ id: exampleArtwork.id}).del();
+    await db('artists').where({uuid: exampleArtist.uuid}).del();
+    await db.destroy()
+  });
 
   it('should return the correct artwork when a valid ID is provided', async () => {
     // Assume you have an artwork with ID 1 in your test data
@@ -44,8 +49,8 @@ describe('GET /artworks/:id', () => {
     expect(response.status).toBe(200);
 
     const dbRecord = await db("artworks").select("*").where("id", validArtworkId);
-    expect(dbRecord).toBeGreaterThan(0);
-    expect(dbRecord).toHaveProperty('id', validArtworkId);
+    expect(dbRecord.length).toBeGreaterThan(0);
+    expect(dbRecord[0]).toHaveProperty('id', validArtworkId);
 
     // Check if the response body contains the expected artwork details
     expect(response.body).toEqual({
@@ -71,7 +76,9 @@ describe('GET /artworks/:id', () => {
     expect(response.status).toBe(404);
 
     const dbRecord = await db("artworks").select("*").where("id", invalidArtworkId);
-    expect(dbRecord).toBeGreaterThan(0);
+    expect(dbRecord.length).toBe(0);
+    //expect(dbRecord[0]).not.toHaveProperty('id');
+    //expect(dbRecord.id).toBe(undefined);
   });
 
   it('should return a 401 status when a negative ID is provided', async () => {
@@ -86,9 +93,21 @@ describe('GET /artworks/:id', () => {
     expect(response.status).toBe(401);
   });
 
-  it('should return a 401 status when a negative ID is provided', async () => {
+  it('should return a 401 status when a string is provided', async () => {
     // Assume there is no artwork with ID 999 in your test data
     const invalidArtworkId = 'hello';
+    
+
+    // Send a GET request to the endpoint with an invalid ID
+    const response = await request(app).get(`/artworks/${invalidArtworkId}`);
+
+    // Check the response status
+    expect(response.status).toBe(401);
+  });
+
+  it('should return a 401 status when too large id is provided', async () => {
+    // Assume there is no artwork with ID 999 in your test data
+    const invalidArtworkId = 9999999;
     
 
     // Send a GET request to the endpoint with an invalid ID

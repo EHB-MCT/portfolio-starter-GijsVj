@@ -8,10 +8,18 @@ const db = require('knex')(knexFile.development);
 // Create an artwork
 router.post('/', (req, res) => {
   const { title, artist_uuid, image_url, location_geohash } = req.body;
+
   if (checkArtworkTitle(title)) {
     db('artworks')
       .insert({ title, artist_uuid, image_url, location_geohash })
-      .then(() => res.status(201).json({ message: 'Artwork created successfully' }))
+      .returning('*') // Use returning('*') to get the inserted data
+      .then((insertedData) => {
+        const insertedArtwork = insertedData[0];
+        res.status(200).json({
+          message: 'Artwork created successfully',
+          artwork: insertedArtwork,
+        });
+      })
       .catch((error) => res.status(500).json({ error }));
   } else {
     res.status(401).send({ message: 'Name not formatted correctly' });
@@ -29,7 +37,7 @@ router.get('/', (req, res) => {
 // Read artwork by id
 router.get('/:id', (req, res) => {
   const id = parseInt(req.params.id);
-  if (id >= 0 && typeof(id) == 'number') {
+  if (id >= 0 && typeof(id) == 'number' && id < 9999999) {
     db('artworks')
       .where({ id })
       .first()
