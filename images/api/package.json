@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "migrate":  "npx knex migrate:latest --cwd src/db ",
+    "migrate": "npx knex migrate:latest --cwd src/db ",
     "start": " npm run migrate && npm run test && node src/index.js",
     "test": "jest --detectOpenHandles --forceExit",
     "nm": "nodemon src/index.js",
@@ -19,7 +19,8 @@
     "knex": "^3.0.1",
     "mysql2": "^3.6.1",
     "nodemon": "^3.0.1",
-    "pg": "^8.11.3"
+    "pg": "^8.11.3",
+    "uuidv4": "^6.2.13"
   },
   "devDependencies": {
     "assert": "^2.1.0",
