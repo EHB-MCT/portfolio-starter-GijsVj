@@ -1,6 +1,7 @@
 services:
   api:
     image: gijsvj/dev5:latest
+    build: ./images/api
     ports:
       - 8080:3000
     environment: 
