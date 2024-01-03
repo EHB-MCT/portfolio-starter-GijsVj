@@ -1,38 +1,51 @@
 const request = require('supertest');
 const app = require('../../app.js');
-const { v4: uuidv4 } = require("uuid")
+const { v4: uuidv4 } = require("uuid");
 const knexfile = require('../../db/knexfile.js');
 const db = require("knex")(knexfile.development);
 
-const ARTISTUUID = uuidv4();
-const exampleArtwork = {
-  id: 1,
-  title: 'Mona Lisa',
-  artist_uuid: ARTISTUUID,
-  image_url: 'https://example.com/mona_lisa.jpg',
-  location_geohash: 'u4pruydqqw43'
-};
+let insertedArtist;
+let insertedRecord;
+let exampleArtwork;
+let exampleArtist; // Declare exampleArtist at a higher scope
 
-const exampleArtist = {
-  uuid: ARTISTUUID,
-  artist: 'Leonardo da Vinci',
-  birthyear: 1452,  // Note: Use a number instead of a string for numeric values
-  artwork_count: 20
-};
 describe('GET /artworks/:id', () => {
+  
   beforeAll(async () => {
-    // Clean up: Delete the test record from the database after the test
-    insertedArtist = await db('artists').insert(exampleArtist).returning("*");
-    insertedRecord = await db('artworks').insert({...exampleArtwork}).returning("*");
-    exampleArtwork.id = insertedRecord[0].id
+    try {
+      // Define exampleArtist
+      exampleArtist = {
+        uuid: uuidv4(),
+        artist: 'Leonardo da Vinci',
+        birthyear: 1452,
+        artwork_count: 20
+      };
 
+      // Insert the artist and get the inserted record
+      insertedArtist = await db('artists').insert(exampleArtist).returning("*");
+
+      // Define exampleArtwork using the insertedArtist
+      exampleArtwork = {
+        title: 'Mona Lisa',
+        artist_uuid: insertedArtist[0].uuid,
+        image_url: 'https://example.com/mona_lisa.jpg',
+        location_geohash: 'u4pruydqqw43'
+      };
+
+      // Insert the artwork and get the inserted record
+      insertedRecord = await db('artworks').insert({ ...exampleArtwork }).returning("*");
+      exampleArtwork.id = insertedRecord[0].id;
+    } catch (error) {
+      console.error('Error during setup:', error);
+    }
   });
 
   afterAll(async () => {
     // Clean up: Delete the test record from the database after the test
+    // Uncomment the following lines when you are ready to implement the cleanup logic
     await db('artworks').where({ id: exampleArtwork.id}).del();
     await db('artists').where({uuid: exampleArtist.uuid}).del();
-    await db.destroy()
+    await db.destroy();
   });
 
   it('should return the correct artwork when a valid ID is provided', async () => {

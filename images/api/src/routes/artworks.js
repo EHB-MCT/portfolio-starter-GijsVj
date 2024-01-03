@@ -1,15 +1,20 @@
 const express = require('express');
 const router = express.Router();
 const { checkArtworkTitle } = require('../helpers/artworkTitleEndpointHelpers.js');
+const { checkArtworkImage } = require('../helpers/artworkImageEndpointHelpers.js');
+const { checkArtworkLocation } = require('../helpers/artworkLocationEndpointHelpers.js');
+const { v4: uuidv4 } = require('uuid'); // Import the uuid library and use the v4 method
 
-const knexFile = require("../db/knexfile.js")
+const knexFile = require("../db/knexfile.js");
+
 const db = require('knex')(knexFile.development);
 
 // Create an artwork
 router.post('/', (req, res) => {
-  const { title, artist_uuid, image_url, location_geohash } = req.body;
+  const { title, image_url, location_geohash } = req.body;
+  const artist_uuid = uuidv4(); // Generate a UUID for the artist
 
-  if (checkArtworkTitle(title)) {
+  if (checkArtworkTitle(title) && checkArtworkImage(image_url) && checkArtworkLocation(location_geohash)) {
     db('artworks')
       .insert({ title, artist_uuid, image_url, location_geohash })
       .returning('*') // Use returning('*') to get the inserted data
@@ -20,9 +25,13 @@ router.post('/', (req, res) => {
           artwork: insertedArtwork,
         });
       })
-      .catch((error) => res.status(500).json({ error }));
+      .catch((error) => {
+        console.error(error); // Log the error for debugging purposes
+        res.status(500).json({ error: 'Internal Server Error' });
+      });
+      
   } else {
-    res.status(401).send({ message: 'Name not formatted correctly' });
+    res.status(401).send({ message: 'Data not formatted correctly' });
   }
 });
 
