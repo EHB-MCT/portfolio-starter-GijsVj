@@ -11,7 +11,7 @@ services:
         condition: service_healthy
     command: ['npm','run','test']
 
-  store:
+  db:
     ports:
       - 5432:5432
     image: postgres:16.0
@@ -20,8 +20,6 @@ services:
       POSTGRES_USER:
       POSTGRES_DB:
       POSTGRES_HOST_AUTH_METHOD: 
-    volumes:
-      - ./_volumes/store:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U $POSTGRES_USER -d $POSTGRES_DB "]
       interval: 5s
