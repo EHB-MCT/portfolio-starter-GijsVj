@@ -1,12 +1,12 @@
 services:
   api:
-    image: crshlab/cicdgroepa2023:latest
+    image: gijsvj/dev5:latest
     ports:
       - 8080:3000
     environment: 
-      POSTGRES_PASSWORD: 
-      POSTGRES_USER: 
-      POSTGRES_DB: 
+      POSTGRES_PASSWORD: user
+      POSTGRES_USER: password
+      POSTGRES_DB: test
       POSTGRES_HOST: db
     depends_on:
       db:
@@ -17,10 +17,12 @@ services:
       - 5432:5432
     image: postgres:16.0
     environment: 
-      POSTGRES_PASSWORD: 
-      POSTGRES_USER: 
-      POSTGRES_DB: 
-      POSTGRES_HOST_AUTH_METHOD: 
+      POSTGRES_PASSWORD: user
+      POSTGRES_USER: password
+      POSTGRES_DB: test
+      POSTGRES_HOST_AUTH_METHOD: trust
+    volumes:
+      - ./_volumes/store:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U $POSTGRES_USER -d $POSTGRES_DB "]
       interval: 5s
@@ -28,7 +30,7 @@ services:
       retries: 10
 
   watchtower:
-    image: containrrr/watchtower
+    image: containrrr/watchtower:v0.13.0
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     command: --interval 30

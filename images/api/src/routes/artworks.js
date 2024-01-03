@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { checkArtworkTitle } = require('../helpers/endpointHelpers.js');
+const { checkArtworkTitle } = require('../helpers/artworkTitleEndpointHelpers.js');
 
 const knexFile = require("../db/knexfile.js")
 const db = require('knex')(knexFile.development);
