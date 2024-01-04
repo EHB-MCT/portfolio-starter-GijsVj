@@ -66,22 +66,70 @@ router.get('/:id', (req, res) => {
 });
 
 // Update an artwork
-router.put('/:id', (req, res) => {
-  const { title, artist_uuid, image_url, location_geohash } = req.body;
+router.put('/:artworkId', async (req, res) => {
+  const artworkId = req.params.artworkId;
 
-  db('artworks')
-    .where({ id: req.params.id })
-    .update({ title, artist_uuid, image_url, location_geohash })
-    .then(() => res.status(200).json({ message: 'Artwork updated successfully' }))
-    .catch((error) => res.status(500).json({ error }));
+  // Validate that the artwork ID is a valid integer
+  if (!Number.isInteger(Number(artworkId))) {
+    return res.status(401).send({ message: 'Invalid artwork ID' });
+  }
+
+  const { title, image_url, location_geohash } = req.body;
+
+  try {
+    // Check if the artwork with the given ID exists
+    const existingArtwork = await db('artworks').where({ id: artworkId }).first();
+
+    if (!existingArtwork) {
+      return res.status(404).json({ error: 'Artwork not found' });
+    }
+
+    if (checkArtworkTitle(title) && checkArtworkImage(image_url) && checkArtworkLocation(location_geohash)) {
+      const updatedData = await db('artworks')
+        .where({ id: artworkId })
+        .update({ title, image_url, location_geohash })
+        .returning('*');
+
+      if (updatedData.length > 0) {
+        const updatedArtwork = updatedData[0];
+        return res.status(200).json({
+          message: 'Artwork updated successfully',
+          artwork: updatedArtwork,
+        });
+      } else {
+        return res.status(404).json({ error: 'Artwork not found' });
+      }
+    } else {
+      return res.status(401).send({ message: 'Data not formatted correctly' });
+    }
+  } catch (error) {
+    return res.status(500).json({ error: 'Internal Server Error' });
+  }
 });
+
+
+
 
 // Delete an artwork
 router.delete('/:id', (req, res) => {
+  const artworkId = parseInt(req.params.id);
+
+  if (isNaN(artworkId) || artworkId < 0 || artworkId >= 9999999) {
+    // Invalid ID provided
+    return res.status(401).json({ error: 'Invalid ID provided' });
+  }
+
   db('artworks')
-    .where({ id: req.params.id })
+    .where({ id: artworkId })
     .del()
-    .then(() => res.status(204).send())
+    .then((deletedCount) => {
+      if (deletedCount === 0) {
+        // Artwork not found
+        return res.status(404).json({ error: 'Artwork not found' });
+      }
+      // Artwork deleted successfully
+      res.status(204).send();
+    })
     .catch((error) => res.status(500).json({ error }));
 });
 
