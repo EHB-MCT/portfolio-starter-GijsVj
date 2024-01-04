@@ -62,11 +62,15 @@ router.get('/:uuid', (req, res) => {
 router.put('/:uuid', (req, res) => {
   const { artist, birthyear, artwork_count } = req.body;
 
-  db('artists')
+  if(checkArtistName(artist) && checkArtistBirthyear(image_url) && checkArtistArtcount(location_geohash)){
+    db('artists')
     .where({ uuid: req.params.uuid })
     .update({ artist, birthyear, artwork_count })
     .then(() => res.status(200).json({ message: 'Artist updated successfully' }))
     .catch((error) => res.status(500).json({ error }));
+  } else {
+    res.status(401).send({ message: 'Data not formatted correctly' });
+  }
 });
 
 // Delete an artist
