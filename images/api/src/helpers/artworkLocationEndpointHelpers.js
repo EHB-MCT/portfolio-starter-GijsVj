@@ -16,7 +16,6 @@ function checkArtworkLocation(location) {
 
     // Check if the location geohash length exceeds a maximum length (adjust the maximum length as needed)
     if (location.length >= 20) {
-        // Adjust the maximum length as per your requirements
         return false;
     }
 
