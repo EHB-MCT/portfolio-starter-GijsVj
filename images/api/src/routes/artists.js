@@ -11,7 +11,8 @@ router.post('/', (req, res) => {
   const { artist, birthyear, artwork_count } = req.body;
   const uuid = uuidv4(); // Generate a unique UUID for the artist
 
-  db('artists')
+  if(checkArtistName(artist) && checkArtistBirthyear(image_url) && checkArtistArtcount(location_geohash)){
+    db('artists')
     .insert({ uuid, artist, birthyear, artwork_count })
     .returning('*') // Use returning('*') to get the inserted data
     .then((insertedData) => {
@@ -22,6 +23,11 @@ router.post('/', (req, res) => {
       });
     })
     .catch((error) => res.status(500).json({ error }));
+  } else {
+    res.status(401).send({ message: 'Data not formatted correctly' });
+  }
+
+
 });
 
 // Read all artists

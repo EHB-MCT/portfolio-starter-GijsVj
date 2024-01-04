@@ -3,7 +3,7 @@ const router = express.Router();
 const { checkArtworkTitle } = require('../helpers/artworkTitleEndpointHelpers.js');
 const { checkArtworkImage } = require('../helpers/artworkImageEndpointHelpers.js');
 const { checkArtworkLocation } = require('../helpers/artworkLocationEndpointHelpers.js');
-const { v4: uuidv4 } = require('uuid'); // Import the uuid library and use the v4 method
+const { v4: uuidv4 } = require('uuid');
 
 const knexFile = require("../db/knexfile.js");
 
@@ -12,12 +12,12 @@ const db = require('knex')(knexFile.development);
 // Create an artwork
 router.post('/', (req, res) => {
   const { title, image_url, location_geohash } = req.body;
-  const artist_uuid = uuidv4(); // Generate a UUID for the artist
+  const artist_uuid = uuidv4();
 
   if (checkArtworkTitle(title) && checkArtworkImage(image_url) && checkArtworkLocation(location_geohash)) {
     db('artworks')
       .insert({ title, artist_uuid, image_url, location_geohash })
-      .returning('*') // Use returning('*') to get the inserted data
+      .returning('*')
       .then((insertedData) => {
         const insertedArtwork = insertedData[0];
         res.status(200).json({
@@ -26,7 +26,6 @@ router.post('/', (req, res) => {
         });
       })
       .catch((error) => {
-        console.error(error); // Log the error for debugging purposes
         res.status(500).json({ error: 'Internal Server Error' });
       });
       
