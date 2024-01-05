@@ -42,11 +42,11 @@ test('check long name exceeding limit', () => {
 
 // Test for a name containing invalid characters
 test('check name with invalid characters', () => {
-    expect(checkArtistName("Starry skies@")).toBe(false);
+    expect(checkArtistName("Bobby@")).toBe(false);
 });
 
 // Test for valid names
 test('check valid names', () => {
-    expect(checkArtistName("Leonardo da Vinci")).toBe(true);
+    expect(checkArtistName("Updated Leonardo da Vinci")).toBe(true);
     expect(checkArtistName("Vincent van Gogh")).toBe(true);
 });

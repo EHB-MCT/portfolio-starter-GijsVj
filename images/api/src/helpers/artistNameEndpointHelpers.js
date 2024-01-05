@@ -20,7 +20,7 @@ function checkArtistName(name) {
     }
 
     // Check if the name length exceeds a maximum length (adjust the maximum length as needed)
-    if (name.length >= 20) {
+    if (name.length >= 50) {
         // Adjust the maximum length as per your requirements
         return false;
     }

@@ -9,18 +9,26 @@ function checkArtistArtcount(artwork_count) {
         return false;
     }
 
-    // Check if the artwork_count is not a string
-    if (typeof artwork_count !== "string") {
+    // Check if the artwork_count is numeric
+    if (typeof artwork_count !== 'number') {
         return false;
     }
 
-    // Check if the location geohash length exceeds a maximum length (adjust the maximum length as needed)
-    if (artwork_count.length > 255) {
+    // Convert the numeric artwork_count to a string for further checks
+    artwork_count = artwork_count.toString();
+
+    // Check if the artwork_count length is less than or equal to 1
+    if (artwork_count.length <= 0) {
         return false;
     }
 
-    // Check if the artwork_count contains only letters and spaces using a regular expression
-    const artwork_countRegex = /^[0-9]+$/;
+    // Check if the artwork_count length exceeds a maximum length (adjust the maximum length as needed)
+    if (artwork_count.length > 4) {
+        return false;
+    }
+
+    // Check if the artwork_count contains only digits using a regular expression
+    const artwork_countRegex = /^\d+$/;
     if (!artwork_countRegex.test(artwork_count)) {
         return false;
     }
