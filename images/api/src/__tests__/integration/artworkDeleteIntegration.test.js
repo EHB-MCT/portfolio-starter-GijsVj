@@ -64,9 +64,6 @@ describe('DELETE /artworks/:id', () => {
   });
 
   it('should return 404 when trying to delete a non-existing artwork', async () => {
-    // Delete the artwork from the database to make it non-existing
-    await db('artworks').where({ id: exampleArtwork.id }).del();
-  
     // Send a DELETE request to the endpoint with the non-existing ID
     const response = await request(app).delete(`/artworks/${exampleArtwork.id}`);
   

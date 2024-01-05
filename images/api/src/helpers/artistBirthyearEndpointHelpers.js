@@ -9,23 +9,26 @@ function checkArtistBirthyear(birthyear) {
         return false;
     }
 
-    // Check if the birthyear is not a string
-    if (typeof birthyear !== "string") {
+    // Check if the birthyear is numeric
+    if (typeof birthyear !== 'number') {
         return false;
     }
+
+    // Convert the numeric birthyear to a string for further checks
+    birthyear = birthyear.toString();
 
     // Check if the birthyear length is less than or equal to 1
     if (birthyear.length <= 1) {
         return false;
     }
 
-    // Check if the location geohash length exceeds a maximum length (adjust the maximum length as needed)
+    // Check if the birthyear length exceeds a maximum length (adjust the maximum length as needed)
     if (birthyear.length > 4) {
         return false;
     }
 
-    // Check if the birthyear contains only letters and spaces using a regular expression
-    const birthyearRegex = /^[0-9]+$/;
+    // Check if the birthyear contains only digits using a regular expression
+    const birthyearRegex = /^\d+$/;
     if (!birthyearRegex.test(birthyear)) {
         return false;
     }

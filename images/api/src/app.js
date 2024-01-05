@@ -13,4 +13,7 @@ const db = knex(knexConfig.development);
 const artworkRoutes = require('./routes/artworks.js');
 app.use('/artworks', artworkRoutes);
 
+const artistRoutes = require('./routes/artists.js');
+app.use('/artists', artistRoutes);
+
 module.exports = app;
