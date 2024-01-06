@@ -1,5 +1,14 @@
 const { checkArtistArtcount } = require("../../helpers/artistEndpointHelpers.js");
-
+/**
+ * Check Artist Artwork Count
+ *
+ * Validates the provided artist artwork count to ensure it meets the specified criteria.
+ *
+ * @param {number} count - The artist's artwork count to be validated.
+ * @returns {boolean} - Returns true if the count is valid, and false otherwise.
+ * @name checkArtistArtcount
+ * @function
+ */
 describe('checkArtistArtcount function', () => {
   test('valid artist artwork count (1990)', () => {
     expect(checkArtistArtcount(1990)).toBe(true);

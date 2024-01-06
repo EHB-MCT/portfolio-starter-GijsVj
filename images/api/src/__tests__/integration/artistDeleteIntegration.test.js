@@ -4,6 +4,21 @@ const { v4: uuidv4 } = require('uuid');
 const knexfile = require('../../db/knexfile.js');
 const db = require('knex')(knexfile.development);
 
+/**
+ * Delete Artist by UUID
+ *
+ * Deletes an artist from the 'artists' table in the database based on the provided UUID.
+ *
+ * @route DELETE /artists/:uuid
+ * @param {string} uuid.path - The UUID of the artist to be deleted.
+ * @returns {number} 204 - No content. The artist has been successfully deleted.
+ * @returns {Object} 404 - Not Found. The artist with the provided UUID does not exist.
+ * @returns {Object} 400 - Bad Request. Invalid UUID or numeric ID provided.
+ * @returns {Object} 500 - Internal Server Error. An error object if the operation fails.
+ * @name DeleteArtistByUUID
+ * @function
+ */
+
 let insertedArtist;
 let exampleArtwork;
 

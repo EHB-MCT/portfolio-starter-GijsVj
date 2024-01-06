@@ -4,6 +4,20 @@ const { v4: uuidv4 } = require("uuid");
 const knexfile = require('../../db/knexfile.js');
 const db = require("knex")(knexfile.development);
 
+/**
+ * Delete Artwork by ID
+ *
+ * Deletes an artwork from the 'artworks' table in the database based on the provided ID.
+ *
+ * @route DELETE /artworks/:id
+ * @param {string} id.path.required - The ID of the artwork to be deleted.
+ * @returns {Object} 204 - No content.
+ * @returns {Object} 404 - Not Found. If the artwork with the provided ID does not exist.
+ * @returns {Object} 500 - An error object if the operation fails.
+ * @name DeleteArtworkByID
+ * @function
+ */
+
 let insertedArtist;
 let insertedRecord;
 let exampleArtwork;
@@ -11,6 +25,9 @@ let exampleArtist;
 
 describe('DELETE /artworks/:id', () => {
 
+  /**
+   * Setup before tests
+   */
   beforeAll(async () => {
     try {
       // Create a new UUID for the artist
@@ -41,6 +58,9 @@ describe('DELETE /artworks/:id', () => {
     }
   });
 
+  /**
+   * Cleanup after tests
+   */
   afterAll(async () => {
     // Clean up: Delete the test record from the database after the test
     await db('artworks').where({ id: exampleArtwork.id }).del();
@@ -48,6 +68,9 @@ describe('DELETE /artworks/:id', () => {
     await db.destroy();
   });
 
+  /**
+   * Test: Delete artwork with a valid ID
+   */
   it('should delete the artwork when a valid ID is provided', async () => {
     // Send a DELETE request to the endpoint with the correct ID
     const response = await request(app)
@@ -63,6 +86,9 @@ describe('DELETE /artworks/:id', () => {
     expect(dbRecord.length).toBe(0);
   });
 
+  /**
+   * Test: Attempt to delete a non-existing artwork
+   */
   it('should return 404 when trying to delete a non-existing artwork', async () => {
     // Send a DELETE request to the endpoint with the non-existing ID
     const response = await request(app).delete(`/artworks/${exampleArtwork.id}`);
@@ -71,6 +97,9 @@ describe('DELETE /artworks/:id', () => {
     expect(response.status).toBe(404);
   });
 
+  /**
+   * Test: Attempt to delete artwork with an invalid ID
+   */
   it('should return 404 when trying to delete with an invalid ID', async () => {
     // Send a DELETE request to the endpoint with an invalid ID
     const response = await request(app)
