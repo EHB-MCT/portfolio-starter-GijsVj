@@ -41,104 +41,103 @@ describe('Artwork End-to-End Tests', () => {
     await db.destroy();
   });
 
-  it('should retrieve a specific artwork via GET /artworks/:id', async () => {
-    const response = await request(app).get(`/artworks/${exampleArtwork.id}`);
-    expect(response.status).toBe(200);
-    expect(response.body).toEqual(exampleArtwork);
-  });
+  describe('Artwork CRUD operations', () => {
+    it('should retrieve a specific artwork via GET /artworks/:id', async () => {
+      const response = await request(app).get(`/artworks/${exampleArtwork.id}`);
+      expect(response.status).toBe(200);
+      expect(response.body).toEqual(exampleArtwork);
+    });
 
-  it('should add a new artwork via POST /artworks', async () => {
-    const newArtwork = {
-      title: 'New Artwork',
-      artist_uuid: exampleArtist.uuid,
-      image_url: 'https://example.com/new_artwork.jpg',
-      location_geohash: 'u4pruydqqw44',
-    };
-  
-    const postResponse = await request(app).post('/artworks').send(newArtwork);
-  
-    if (postResponse.status !== 200) {
-      console.error('Error adding artwork:', postResponse.status, postResponse.body, postResponse.error);
-    } else {
-      expect(postResponse.status).toBe(200);
-  
-      const addedArtworkId = postResponse.body.id;
-  
+    it('should add a new artwork via POST /artworks', async () => {
+      const newArtwork = {
+        title: 'New Artwork',
+        artist_uuid: exampleArtist.uuid,
+        image_url: 'https://example.com/new_artwork.jpg',
+        location_geohash: 'u4pruydqqw44',
+      };
+    
+      const postResponse = await request(app).post('/artworks').send(newArtwork);
+    
+        expect(postResponse.status).toBe(201);
+    
+        const addedArtworkId = postResponse.body.artwork.id;
+    
         const getResponse = await request(app).get(`/artworks/${addedArtworkId}`);
-  
-        // Check the response status for the GET request
-        if (getResponse.status === 200) {
-          // Ensure that the response body has the expected structure
-          expect(getResponse.body).toEqual(newArtwork);
-        }
-    }
+
+        const expectedArtwork = {
+          id: addedArtworkId,
+          title: 'New Artwork',
+          artist_uuid: exampleArtist.uuid,
+          image_url: 'https://example.com/new_artwork.jpg',
+          location_geohash: 'u4pruydqqw44',
+        };
+    
+        expect(getResponse.status).toBe(200)
+        expect(getResponse.body).toEqual(expectedArtwork);
+    });
+
+    it('should update an existing artwork via PUT /artworks/:id', async () => {
+      const updatedArtwork = {
+        title: 'Updated Artwork',
+        artist_uuid: exampleArtist.uuid,
+        image_url: 'https://example.com/updated_artwork.jpg',
+        location_geohash: 'u4pruydqqw45',
+      };
+
+      const putResponse = await request(app).put(`/artworks/${exampleArtwork.id}`).send(updatedArtwork);
+      expect(putResponse.status).toBe(200);
+
+      const getResponse = await request(app).get(`/artworks/${exampleArtwork.id}`);
+      expect(getResponse.status).toBe(200);
+      expect(getResponse.body).toEqual({ ...updatedArtwork, id: exampleArtwork.id });
+    });
+
+    it('should delete an existing artwork via DELETE /artworks/:id', async () => {
+      const deleteResponse = await request(app).delete(`/artworks/${exampleArtwork.id}`);
+      expect(deleteResponse.status).toBe(204);
+
+      const getResponse = await request(app).get(`/artworks/${exampleArtwork.id}`);
+      expect(getResponse.status).toBe(404);
+    });
   });
 
-  it('should update an existing artwork via PUT /artworks/:id', async () => {
-    const updatedArtwork = {
-      title: 'Updated Artwork',
-      artist_uuid: exampleArtist.uuid,
-      image_url: 'https://example.com/updated_artwork.jpg',
-      location_geohash: 'u4pruydqqw45',
-    };
-  
-    const putResponse = await request(app).put(`/artworks/${exampleArtwork.id}`).send(updatedArtwork);
-    expect(putResponse.status).toBe(200);
-  
-    const getResponse = await request(app).get(`/artworks/${exampleArtwork.id}`);
-    expect(getResponse.status).toBe(200);
-    expect(getResponse.body).toEqual({ ...updatedArtwork, id: exampleArtwork.id });  // Fix: Include "id" in the comparison
-  });
+  describe('Artist CRUD operations', () => {
+    it('should retrieve a specific artist via GET /artists/:uuid', async () => {
+      const response = await request(app).get(`/artists/${exampleArtist.uuid}`);
+      expect(response.status).toBe(200);
+      expect(response.body).toEqual(exampleArtist);
+    });
 
-  it('should delete an existing artwork via DELETE /artworks/:id', async () => {
-    const deleteResponse = await request(app).delete(`/artworks/${exampleArtwork.id}`);
-    expect(deleteResponse.status).toBe(204);
+    it('should add a new artist via POST /artists', async () => {
+      const newArtist = {
+        artist: 'New Artist',
+        birthyear: 2000,
+        artwork_count: 10,
+      };
 
-    const getResponse = await request(app).get(`/artworks/${exampleArtwork.id}`);
-    expect(getResponse.status).toBe(404);
-  });
+      const postResponse = await request(app).post('/artists').send(newArtist);
+      expect(postResponse.status).toBe(201);
 
-  // Artist endpoints tests
+      const addedArtistUuid = postResponse.body.artist.uuid;
+      const getResponse = await request(app).get(`/artists/${addedArtistUuid}`);
+      expect(getResponse.status).toBe(200);
+      expect(getResponse.body).toEqual({ uuid: addedArtistUuid, ...newArtist });
+    });
 
-  it('should retrieve a specific artist via GET /artists/:uuid', async () => {
-    const response = await request(app).get(`/artists/${exampleArtist.uuid}`);
-    expect(response.status).toBe(200);
-    expect(response.body).toEqual(exampleArtist);
-  });
+    it('should update an existing artist via PUT /artists/:uuid', async () => {
+      const updatedArtist = { ...insertedArtist[0], artist: 'Picasso' };
+      const response = await request(app).put(`/artists/${exampleArtist.uuid}`).send(updatedArtist);
 
-  it('should add a new artist via POST /artists', async () => {
-    const newArtist = {
-      artist: 'New Artist',
-      birthyear: 2000,
-      artwork_count: 10,
-    };
+      expect(response.status).toBe(200);
+      expect(response.body.message).toBe('Artist updated successfully');
+    });
 
-    const postResponse = await request(app).post('/artists').send(newArtist);
-    expect(postResponse.status).toBe(200);
+    it('should delete an existing artist via DELETE /artists/:uuid', async () => {
+      const deleteResponse = await request(app).delete(`/artists/${exampleArtist.uuid}`);
+      expect(deleteResponse.status).toBe(204);
 
-    const addedArtistUuid = postResponse.body.artist.uuid;
-    const getResponse = await request(app).get(`/artists/${addedArtistUuid}`);
-    expect(getResponse.status).toBe(200);
-    expect(getResponse.body).toEqual({ uuid: addedArtistUuid, ...newArtist });
-  });
-
-  it('should update an existing artist via PUT /artists/:uuid', async () => {
-    const updatedArtist = { ...insertedArtist[0], artist: "Picasso" };
-    const response = await request(app)
-      .put(`/artists/${exampleArtist.uuid}`)
-      .send(updatedArtist);
-
-    // Assertions specific to end-to-end testing
-    expect(response.status).toBe(200);
-    expect(response.body.message).toBe('Artist updated successfully');
-    // Add more assertions based on the expected response from the API
-  });
-
-  it('should delete an existing artist via DELETE /artists/:uuid', async () => {
-    const deleteResponse = await request(app).delete(`/artists/${exampleArtist.uuid}`);
-    expect(deleteResponse.status).toBe(204);
-
-    const getResponse = await request(app).get(`/artists/${exampleArtist.uuid}`);
-    expect(getResponse.status).toBe(404);
+      const getResponse = await request(app).get(`/artists/${exampleArtist.uuid}`);
+      expect(getResponse.status).toBe(404);
+    });
   });
 });

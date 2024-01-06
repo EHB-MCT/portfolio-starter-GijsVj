@@ -1,51 +1,54 @@
 const express = require('express');
 const router = express.Router();
-const { v4: uuidv4 } = require('uuid'); // Importing UUID library
-const { checkArtistName } = require('../helpers/artistNameEndpointHelpers.js');
-const { checkArtistBirthyear } = require('../helpers/artistBirthyearEndpointHelpers.js');
-const { checkArtistArtcount } = require('../helpers/artistArtcountEndpointHelpers.js');
-const { isValidUUID } = require('../uuidValidator.js')
+const { v4: uuidv4 } = require('uuid');
+const { 
+  checkArtistName, 
+  checkArtistBirthyear, 
+  checkArtistArtcount 
+} = require('../helpers/artistEndpointHelpers');
+const { isValidUUID } = require('../helpers/uuidValidator');
+const knex = require('../db/knexfile');
 
-const knexFile = require("../db/knexfile.js")
-const db = require('knex')(knexFile.development);
+const db = require('knex')(knex.development);
 
-// Create an artist
-router.post('/', (req, res) => {
+router.post('/', async (req, res) => {
   const { artist, birthyear, artwork_count } = req.body;
-  const uuid = uuidv4(); // Generate a unique UUID for the artist
+  const uuid = uuidv4();
 
-  if(checkArtistName(artist) && checkArtistBirthyear(birthyear) && checkArtistArtcount(artwork_count)){
-    db('artists')
-    .insert({ uuid, artist, birthyear, artwork_count })
-    .returning('*') // Use returning('*') to get the inserted data
-    .then((insertedData) => {
-      const insertedArtist = insertedData[0];
-      res.status(200).json({
+  try {
+    if (checkArtistName(artist) && checkArtistBirthyear(birthyear) && checkArtistArtcount(artwork_count)) {
+      const [insertedArtist] = await db('artists').insert({ uuid, artist, birthyear, artwork_count }).returning('*');
+
+      res.status(201).json({
         message: 'Artist created successfully',
         artist: insertedArtist,
       });
-    })
-    .catch((error) => res.status(500).json({ error }));
-  } else {
-    res.status(401).send({ message: 'Data not formatted correctly' });
+    } else {
+      res.status(400).send({ message: 'Data not formatted correctly' });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'An error occurred while creating artist', e: error });
   }
 });
 
 // Read all artists
-router.get('/', (req, res) => {
-  db('artists')
-    .select()
-    .then((artists) => res.status(200).json(artists))
-    .catch((error) => res.status(500).json({ error }));
+router.get('/', async (req, res) => {
+  try {
+    const artists = await db('artists').select();
+    res.status(200).json(artists);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'An error occurred while fetching artists', e: error });
+  }
 });
 
 // Read artist by uuid
 router.get('/:uuid', async (req, res) => {
   const uuid = req.params.uuid;
 
-  // Validate if the provided UUID is a valid UUID format
   if (!isValidUUID(uuid)) {
-    return res.status(401).json({ error: 'Invalid UUID format' });
+    return res.status(400).json({ error: 'Invalid UUID format' });
   }
 
   try {
@@ -63,41 +66,43 @@ router.get('/:uuid', async (req, res) => {
 });
 
 // Update an artist
-router.put('/:uuid', (req, res) => {
-  const {uuid, artist, birthyear, artwork_count } = req.body;
+router.put('/:uuid', async (req, res) => {
+  const { uuid, artist, birthyear, artwork_count } = req.body;
 
-  if(checkArtistName(artist) && checkArtistBirthyear(birthyear) && checkArtistArtcount(artwork_count)){
-    db('artists')
-    .where({ uuid })
-    .update({ artist, birthyear, artwork_count })
-    .then(() => res.status(200).json({ message: 'Artist updated successfully' }))
-    .catch((error) => res.status(500).json({ error }));
-  } else {
-    res.status(401).send({ message: 'Data not formatted correctly' });
+  try {
+    if (checkArtistName(artist) && checkArtistBirthyear(birthyear) && checkArtistArtcount(artwork_count)) {
+      await db('artists').where({ uuid }).update({ artist, birthyear, artwork_count });
+
+      res.status(200).json({ message: 'Artist updated successfully' });
+    } else {
+      res.status(400).send({ message: 'Data not formatted correctly' });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'An error occurred while updating artist', e: error });
   }
 });
 
-// Delete an artwork
-router.delete('/:uuid', (req, res) => {
+// Delete an artist
+router.delete('/:uuid', async (req, res) => {
   const uuid = req.params.uuid;
 
   if (!isValidUUID(uuid)) {
-    // Invalid ID provided
-    return res.status(401).json({ error: 'Invalid UUID provided' });
+    return res.status(400).json({ error: 'Invalid UUID provided' });
   }
 
-  db('artists')
-    .where({ uuid: uuid })
-    .del()
-    .then((deletedCount) => {
-      if (deletedCount === 0) {
-        // Artist not found
-        return res.status(404).json({ error: 'Artist not found' });
-      }
-      // Artist deleted successfully
-      res.status(204).send();
-    })
-    .catch((error) => res.status(500).json({ error }));
+  try {
+    const deletedCount = await db('artists').where({ uuid }).del();
+
+    if (deletedCount === 0) {
+      return res.status(404).json({ error: 'Artist not found' });
+    }
+
+    res.status(204).send();
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'An error occurred while deleting artist', e: error });
+  }
 });
 
 module.exports = router;
