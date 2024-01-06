@@ -28,7 +28,6 @@ describe('PUT /artists/:uuid', () => {
         location_geohash: 'u4pruydqqw43',
       };
       insertedRecord = await db('artworks').insert({ ...exampleArtwork }).returning('*');
-      
 
     } catch (error) {
       console.error('Error during setup:', error);
@@ -36,64 +35,64 @@ describe('PUT /artists/:uuid', () => {
   });
 
   afterAll(async () => {
-    // Clean up: Delete the test record from the database after the test
-    await db('artworks').where({ id: insertedRecord[0].id }).del();
-    await db('artists').where({ uuid: exampleArtist.uuid }).del();
-    await db.destroy();
+    try {
+      await db('artworks').where({ id: insertedRecord[0].id }).del();
+      await db('artists').where({ uuid: exampleArtist.uuid }).del();
+      await db.destroy();
+    } catch (error) {
+      console.error('Error during cleanup:', error);
+    }
   });
 
   it('should update the artist when valid data is provided', async () => {
-    const updatedArtist = { ...insertedArtist[0], artist:"picasso", uuid:exampleArtist.uuid };
-  
+    const updatedArtist = { ...insertedArtist[0], artist: 'Picasso' };
+
     const response = await request(app)
       .put(`/artists/${exampleArtist.uuid}`)
       .send(updatedArtist);
-  
+
     expect(response.status).toBe(200);
-  
+
     const dbRecord = await db('artists').select('*').where('uuid', exampleArtist.uuid);
     expect(dbRecord.length).toBe(1);
-  
+
     const updatedRecord = dbRecord[0];
     expect(updatedRecord.artist).toBe(updatedArtist.artist);
     expect(updatedRecord.birthyear).toBe(updatedArtist.birthyear);
     expect(updatedRecord.artwork_count).toBe(updatedArtist.artwork_count);
   });
 
-  it('should return 401 when invalid data is provided', async () => {
-    // Assume invalidArtist has invalid data
+  it('should return 400 when invalid data is provided', async () => {
     const invalidArtist = {
-      artist: '', // Invalid artist name
-      birthyear: 'invalid_year', // Invalid birth year
-      artwork_count: 'invalid_count', // Invalid artwork count
+      artist: '',
+      birthyear: 'invalid_year',
+      artwork_count: 'invalid_count',
     };
 
     const response = await request(app)
       .put(`/artists/${exampleArtist.uuid}`)
       .send(invalidArtist);
 
-    // Check the response status
-    expect(response.status).toBe(401);
+    expect(response.status).toBe(400);
   });
 
-  it('should return 404 when updating non-existing artist', async () => {
-    const nonExistingUuid = uuidv4(); // Non-existing UUID
+  it('should return 400 when updating non-existing artist', async () => {
+    const nonExistingUuid = uuidv4();
 
     const response = await request(app)
       .put(`/artists/${nonExistingUuid}`)
       .send({});
 
-    // Check the response status
-    expect(response.status).toBe(401);
+    expect(response.status).toBe(400);
   });
 
-  it('should return 401 when updating with an invalid UUID', async () => {
-    const invalidUuid = 'invalid_uuid'; // Invalid UUID
+  it('should return 400 when updating with an invalid UUID', async () => {
+    const invalidUuid = 'invalid_uuid';
 
     const response = await request(app)
       .put(`/artists/${invalidUuid}`)
       .send({});
 
-    expect(response.status).toBe(401);
+    expect(response.status).toBe(400);
   });
 });

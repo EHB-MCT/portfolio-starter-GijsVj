@@ -1,48 +1,49 @@
-const { checkArtworkImage } = require("../../helpers/artworkImageEndpointHelpers.js");
+const { checkArtworkImage } = require("../../helpers/artworkEndpointHelpers.js");
 
-// Test for a specific case (e.g., valid URL)
-test('check valid image URL', () => {
-    expect(checkArtworkImage("https://example.com/starry-night.jpg")).toBe(true);
-});
+describe('Artwork Image URL Validation', () => {
+  test('valid URL', () => {
+    const validUrl = "https://example.com/starry-night.jpg";
+    expect(checkArtworkImage(validUrl)).toBe(true);
+  });
 
-// Test for an invalid URL
-test('check invalid image URL', () => {
-    expect(checkArtworkImage("invalid-url")).toBe(false);
-});
+  test('invalid URL', () => {
+    const invalidUrl = "invalid-url";
+    expect(checkArtworkImage(invalidUrl)).toBe(false);
+  });
 
-// Test for an edge case (e.g., minimum length)
-test('check minimum length image URL', () => {
-    expect(checkArtworkImage("a")).toBe(false);
-});
+  test('minimum length URL', () => {
+    const minUrl = "a";
+    expect(checkArtworkImage(minUrl)).toBe(false);
+  });
 
-// Test for an edge case (e.g., maximum length)
-test('check maximum length image URL', () => {
+  test('maximum length URL', () => {
     // Assuming a maximum length of 255 characters (for example purposes)
     const longUrl = "https://example.com/" + "a".repeat(250) + ".jpg";
     expect(checkArtworkImage(longUrl)).toBe(false);
-});
+  });
 
-// Test for a empty string
-test('check empty strting image URL', () => {
-    expect(checkArtworkImage("")).toBe(false);
-});
+  test('empty string URL', () => {
+    const emptyUrl = "";
+    expect(checkArtworkImage(emptyUrl)).toBe(false);
+  });
 
-// Test for a null input
-test('check null image URL', () => {
-    expect(checkArtworkImage(null)).toBe(false);
-});
+  test('null URL', () => {
+    const nullUrl = null;
+    expect(checkArtworkImage(nullUrl)).toBe(false);
+  });
 
-// Test for a string
-test('check string image URL', () => {
-    expect(checkArtworkImage(1)).toBe(false);
-});
+  test('non-string URL', () => {
+    const nonStringUrl = 1;
+    expect(checkArtworkImage(nonStringUrl)).toBe(false);
+  });
 
-// Test for a false
-test('check false image URL', () => {
-    expect(checkArtworkImage(false)).toBe(false);
-});
+  test('false URL', () => {
+    const falseUrl = false;
+    expect(checkArtworkImage(falseUrl)).toBe(false);
+  });
 
-// Test for an undefined
-test('check undefined image URL', () => {
-    expect(checkArtworkImage(undefined)).toBe(false);
+  test('undefined URL', () => {
+    const undefinedUrl = undefined;
+    expect(checkArtworkImage(undefinedUrl)).toBe(false);
+  });
 });

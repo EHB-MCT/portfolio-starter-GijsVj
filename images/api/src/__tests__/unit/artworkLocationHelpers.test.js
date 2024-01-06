@@ -1,62 +1,54 @@
-const { checkArtworkLocation } = require("../../helpers/artworkLocationEndpointHelpers.js");
+const { checkArtworkLocation } = require("../../helpers/artworkEndpointHelpers.js");
 
-// Test for a valid location geohash
-test('check valid location geohash', () => {
+describe('Artwork Location Geohash Validation', () => {
+  test('Valid geohash should return true', () => {
     const validGeohash = "u4pruydqqvj";
     expect(checkArtworkLocation(validGeohash)).toBe(true);
-});
+  });
 
-// Test for an invalid location geohash
-test('check invalid location geohash', () => {
+  test('Invalid geohash should return false', () => {
     const invalidGeohash = "invalid-location";
     expect(checkArtworkLocation(invalidGeohash)).toBe(false);
-});
+  });
 
-// Test for minimum length location geohash
-test('check minimum length location geohash', () => {
+  test('Minimum length geohash should return false', () => {
     const minGeohash = "a";
     expect(checkArtworkLocation(minGeohash)).toBe(false);
-});
+  });
 
-// Test for maximum length + 1 location geohash
-test('check maximum length + 1 location geohash', () => {
+  test('Geohash exceeding maximum length should return false', () => {
     // Assuming a maximum length of 20 characters
     const longGeohash = "a".repeat(21);
     expect(checkArtworkLocation(longGeohash)).toBe(false);
-});
+  });
 
-// Test for empty string location geohash
-test('check empty string location geohash', () => {
+  test('Empty geohash should return false', () => {
     const emptyGeohash = "";
     expect(checkArtworkLocation(emptyGeohash)).toBe(false);
-});
+  });
 
-// Test for null location geohash
-test('check null location geohash', () => {
+  test('Null geohash should return false', () => {
     const nullGeohash = null;
     expect(checkArtworkLocation(nullGeohash)).toBe(false);
-});
+  });
 
-// Test for non-string input
-test('check non-string location geohash', () => {
+  test('Non-string geohash should return false', () => {
     const nonStringGeohash = 1;
     expect(checkArtworkLocation(nonStringGeohash)).toBe(false);
-});
+  });
 
-// Test for false input
-test('check false location geohash', () => {
+  test('False geohash should return false', () => {
     const falseGeohash = false;
     expect(checkArtworkLocation(falseGeohash)).toBe(false);
-});
+  });
 
-// Test for undefined input
-test('check undefined location geohash', () => {
+  test('Undefined geohash should return false', () => {
     const undefinedGeohash = undefined;
     expect(checkArtworkLocation(undefinedGeohash)).toBe(false);
-});
+  });
 
-// Test for geohash with capital letters
-test('check geohash with capital letters', () => {
+  test('Geohash with capital letters should return false', () => {
     const capitalGeohash = "u4pruYdQqVJ";
     expect(checkArtworkLocation(capitalGeohash)).toBe(false);
+  });
 });

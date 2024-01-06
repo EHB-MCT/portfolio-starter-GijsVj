@@ -10,10 +10,11 @@ app.use(bodyParser.json());
 const db = knex(knexConfig.development);
 
 // Import routes
-const artworkRoutes = require('./routes/artworks.js');
-app.use('/artworks', artworkRoutes);
+const artworkRoutes = require('./routes/artworks');
+const artistRoutes = require('./routes/artists');
 
-const artistRoutes = require('./routes/artists.js');
+// Use routes with appropriate base paths
+app.use('/artworks', artworkRoutes);
 app.use('/artists', artistRoutes);
 
 module.exports = app;

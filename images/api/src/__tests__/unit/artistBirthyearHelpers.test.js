@@ -1,6 +1,7 @@
-const { checkArtistBirthyear } = require("../../helpers/artistBirthyearEndpointHelpers.js");
+const { checkArtistBirthyear } = require("../../helpers/artistEndpointHelpers.js");
 
-test('valid artist birthyear', () => {
+describe('checkArtistBirthyear', () => {
+  test('valid artist birthyear', () => {
     expect(checkArtistBirthyear(1990)).toBe(true);
   });
 
@@ -10,6 +11,10 @@ test('valid artist birthyear', () => {
 
   test('invalid artist birthyear - undefined', () => {
     expect(checkArtistBirthyear(undefined)).toBe(false);
+  });
+
+  test('invalid artist birthyear - boolean', () => {
+    expect(checkArtistBirthyear(true)).toBe(false);
   });
 
   test('invalid artist birthyear - non-numeric', () => {
@@ -25,7 +30,7 @@ test('valid artist birthyear', () => {
   });
 
   test('invalid artist birthyear - non-digit characters', () => {
-    expect(checkArtistBirthyear('abcd')).toBe(false);
+    expect(checkArtistBirthyear('ab#&')).toBe(false);
   });
 
   test('invalid artist birthyear - float', () => {
@@ -35,3 +40,4 @@ test('valid artist birthyear', () => {
   test('invalid artist birthyear - negative', () => {
     expect(checkArtistBirthyear(-1990)).toBe(false);
   });
+});

@@ -1,47 +1,41 @@
-const { checkArtworkTitle } = require("../../helpers/artworkTitleEndpointHelpers.js");
+const { checkArtworkTitle } = require("../../helpers/artworkEndpointHelpers.js");
 
-// Test for an empty title
-test('check empty title', () => {
+describe('Artwork Title Validation', () => {
+  test('should return false for empty title', () => {
     expect(checkArtworkTitle("")).toBe(false);
-});
+  });
 
-// Test for a null title
-test('check null title', () => {
+  test('should return false for null title', () => {
     expect(checkArtworkTitle(null)).toBe(false);
-});
+  });
 
-// Test for a short title
-test('check short title', () => {
+  test('should return false for short title', () => {
     expect(checkArtworkTitle("i")).toBe(false);
-});
+  });
 
-// Test for a numeric title
-test('check numeric title', () => {
+  test('should return false for numeric title', () => {
     expect(checkArtworkTitle(1)).toBe(false);
-});
+  });
 
-// Test for a boolean title
-test('check boolean title', () => {
+  test('should return false for boolean title', () => {
     expect(checkArtworkTitle(false)).toBe(false);
-});
+  });
 
-// Test for an undefined title
-test('check undefined title', () => {
+  test('should return false for undefined title', () => {
     expect(checkArtworkTitle(undefined)).toBe(false);
-});
+  });
 
-// Test for a long title exceeding the character limit
-test('check long title exceeding limit', () => {
-    expect(checkArtworkTitle("fdfgsrgsdhdshsergskflghsldghsghsd;gjslfgdsfhlghsdsdjhfgsghdkfghdfkgjhsfkghfgjhkfhgkfghfghksfhdskjshdg")).toBe(false);
-});
+  test('should return false for long title exceeding limit', () => {
+    const longTitle = "fdfgsrgsdhdshsergskflghsldghsghsd;gjslfgdsfhlghsdsdjhfgsghdkfghdfkgjhsfkghfgjhkfhgkfghfghksfhdskjshdg";
+    expect(checkArtworkTitle(longTitle)).toBe(false);
+  });
 
-// Test for a title containing invalid characters
-test('check title with invalid characters', () => {
+  test('should return false for title with invalid characters', () => {
     expect(checkArtworkTitle("Starry skies@")).toBe(false);
-});
+  });
 
-// Test for valid titles
-test('check valid titles', () => {
+  test('should return true for valid titles', () => {
     expect(checkArtworkTitle("mona lisa")).toBe(true);
     expect(checkArtworkTitle("de schreeuw")).toBe(true);
+  });
 });

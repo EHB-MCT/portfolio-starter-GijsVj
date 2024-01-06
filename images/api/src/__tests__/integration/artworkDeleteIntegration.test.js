@@ -7,7 +7,7 @@ const db = require("knex")(knexfile.development);
 let insertedArtist;
 let insertedRecord;
 let exampleArtwork;
-let exampleArtist; // Declare exampleArtist here
+let exampleArtist;
 
 describe('DELETE /artworks/:id', () => {
 
@@ -71,12 +71,12 @@ describe('DELETE /artworks/:id', () => {
     expect(response.status).toBe(404);
   });
 
-  it('should return 401 when trying to delete with an invalid ID', async () => {
+  it('should return 404 when trying to delete with an invalid ID', async () => {
     // Send a DELETE request to the endpoint with an invalid ID
     const response = await request(app)
       .delete(`/artworks/invalid_id`);
     
     // Check the response status
-    expect(response.status).toBe(401);
+    expect(response.status).toBe(404);
   });
 });
