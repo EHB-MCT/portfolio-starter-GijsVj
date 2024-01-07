@@ -13,6 +13,8 @@
  * @property {string} development.migrations.tableName - Name of the migrations table in the database.
  * @property {string} development.migrations.directory - Directory path for storing migration files.
  */
+require('dotenv').config();
+
 module.exports = {
   development: {
     client: 'pg',
@@ -22,4 +24,4 @@ module.exports = {
       directory: './migrations'
     }
   }
-};
+}

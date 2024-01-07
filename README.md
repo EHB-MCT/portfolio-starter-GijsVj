@@ -34,7 +34,16 @@ Ensure you have the following software installed:
 2. Run the following command:
 
    ```
-   docker-compose up --build
+   docker-compose -f docker-compose.dev.yml up --build
+   ```
+3. your server is running on localhost:80 with /artworks and /artists to see the endpoints
+#### Installation test environment
+
+1. Copy the `.env.template` file to `.env`
+2. Run the following command:
+
+   ```
+   docker-compose -f .\docker-compose.test.yml up --build
    ```
 # Artworks Endpoint
 
