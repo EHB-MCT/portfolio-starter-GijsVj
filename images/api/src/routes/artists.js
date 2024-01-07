@@ -11,6 +11,32 @@ const knex = require('../db/knexfile');
 
 const db = require('knex')(knex.development);
 
+
+/**
+* Structure artist object and parameter
+*
+* @param {string} uuid: Unique identifier for the artist.
+* @param {string} artist - The name of the artist.
+* @param {number} birthyear - The birth year of the artist.
+* @param {number} artwork_count - The count of artworks associated with the artist.
+*/
+
+/**
+ * Create Artist
+ *
+ * Creates a new artist in the 'artists' table in the database.
+ *
+ * @route POST /
+ * @param {Object} req.body - The request body containing artist details.
+ * @param {string} req.body.artist - The name of the artist.
+ * @param {number} req.body.birthyear - The birth year of the artist.
+ * @param {number} req.body.artwork_count - The count of artworks by the artist.
+ * @returns {Object} 201 - A success message and the created artist object.
+ * @returns {Object} 400 - An error object if the request data is not formatted correctly.
+ * @returns {Object} 500 - An error object if the operation fails.
+ * @name CreateArtist
+ * @function
+ */
 router.post('/', async (req, res) => {
   const { artist, birthyear, artwork_count } = req.body;
   const uuid = uuidv4();
@@ -32,7 +58,18 @@ router.post('/', async (req, res) => {
   }
 });
 
-// Read all artists
+
+/**
+ * Get All Artists
+ *
+ * Retrieves a list of all artists from the 'artists' table in the database.
+ *
+ * @route GET /
+ * @returns {Object} 200 - An array of artist objects.
+ * @returns {Object} 500 - An error object if the operation fails.
+ * @name GetAllArtists
+ * @function
+ */
 router.get('/', async (req, res) => {
   try {
     const artists = await db('artists').select();
@@ -43,7 +80,22 @@ router.get('/', async (req, res) => {
   }
 });
 
-// Read artist by uuid
+
+
+/**
+ * Get Artist by UUID
+ *
+ * Retrieves an artist from the 'artists' table by UUID.
+ *
+ * @route GET /:uuid
+ * @param {string} req.params.uuid - The UUID of the artist to retrieve.
+ * @returns {Object} 200 - The artist object.
+ * @returns {Object} 400 - An error object if the provided UUID is invalid.
+ * @returns {Object} 404 - An error object if the artist is not found.
+ * @returns {Object} 500 - An error object if the operation fails.
+ * @name GetArtistByUUID
+ * @function
+ */
 router.get('/:uuid', async (req, res) => {
   const uuid = req.params.uuid;
 
@@ -65,7 +117,23 @@ router.get('/:uuid', async (req, res) => {
   }
 });
 
-// Update an artist
+/**
+ * Update Artist
+ *
+ * Updates an existing artist in the 'artists' table by UUID.
+ *
+ * @route PUT /:uuid
+ * @param {Object} req.body - The request body containing artist details.
+ * @param {string} req.body.uuid - The UUID of the artist to update.
+ * @param {string} req.body.artist - The updated name of the artist.
+ * @param {number} req.body.birthyear - The updated birth year of the artist.
+ * @param {number} req.body.artwork_count - The updated count of artworks by the artist.
+ * @returns {Object} 200 - A success message.
+ * @returns {Object} 400 - An error object if the request data is not formatted correctly.
+ * @returns {Object} 500 - An error object if the operation fails.
+ * @name UpdateArtist
+ * @function
+ */
 router.put('/:uuid', async (req, res) => {
   const { uuid, artist, birthyear, artwork_count } = req.body;
 
@@ -83,7 +151,20 @@ router.put('/:uuid', async (req, res) => {
   }
 });
 
-// Delete an artist
+/**
+ * Delete Artist
+ *
+ * Deletes an existing artist in the 'artists' table by UUID.
+ *
+ * @route DELETE /:uuid
+ * @param {string} req.params.uuid - The UUID of the artist to delete.
+ * @returns {Object} 204 - A success message.
+ * @returns {Object} 400 - An error object if the provided UUID is invalid.
+ * @returns {Object} 404 - An error object if the artist is not found.
+ * @returns {Object} 500 - An error object if the operation fails.
+ * @name DeleteArtist
+ * @function
+ */
 router.delete('/:uuid', async (req, res) => {
   const uuid = req.params.uuid;
 

@@ -1,5 +1,17 @@
 const { checkArtistName } = require("../../helpers/artistEndpointHelpers.js");
-
+/**
+ * Check Artist Name
+ *
+ * Validates the provided artist name to ensure it meets certain criteria.
+ * The function checks for empty, null, short, numeric, boolean, and undefined names.
+ * It also checks for names exceeding a character limit and containing invalid characters.
+ *
+ * @route POST /checkArtistName
+ * @param {string} artistName - The artist name to be validated.
+ * @returns {boolean} - Returns true if the artist name is valid; otherwise, false.
+ * @name CheckArtistName
+ * @function
+ */
 describe('checkArtistName', () => {
   test('should return false for an empty name', () => {
     expect(checkArtistName("")).toBe(false);

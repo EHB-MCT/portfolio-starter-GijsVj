@@ -3,14 +3,13 @@ services:
     image: gijsvj/dev5:latest
     build: ./images/api
     ports:
-      - 8080:3000
+      - 5000:3000
     environment: 
       PG_CONNECTION_STRING: "postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@store:5432/${POSTGRES_DB}"
     depends_on:
       store:
         condition: service_healthy
     command: ['npm','run','test']
-
   store:
     ports:
       - 5432:5432

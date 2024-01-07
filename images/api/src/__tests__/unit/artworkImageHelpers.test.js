@@ -1,5 +1,15 @@
 const { checkArtworkImage } = require("../../helpers/artworkEndpointHelpers.js");
-
+/**
+ * Artwork Image URL Validation
+ *
+ * Validates artwork image URLs using the checkArtworkImage function.
+ *
+ * @route Artwork Image URL Validation
+ * @group Testing
+ * @param {string} validUrl - The artwork URL to be validated.
+ * @name ArtworkImageURLValidation
+ * @function
+ */
 describe('Artwork Image URL Validation', () => {
   test('valid URL', () => {
     const validUrl = "https://example.com/starry-night.jpg";

@@ -1,5 +1,15 @@
 const { checkArtworkTitle } = require("../../helpers/artworkEndpointHelpers.js");
-
+/**
+ * Check Artwork Title Validity
+ *
+ * Validates the provided artwork title based on specific criteria.
+ *
+ * @route POST /validateTitle
+ * @param {string} title - The title to be validated.
+ * @returns {boolean} - Returns true if the title is valid, otherwise false.
+ * @name CheckArtworkTitle
+ * @function
+ */
 describe('Artwork Title Validation', () => {
   test('should return false for empty title', () => {
     expect(checkArtworkTitle("")).toBe(false);

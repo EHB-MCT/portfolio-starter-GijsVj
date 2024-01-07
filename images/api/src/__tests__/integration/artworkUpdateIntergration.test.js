@@ -4,14 +4,29 @@ const { v4: uuidv4 } = require('uuid');
 const knexfile = require('../../db/knexfile.js');
 const db = require('knex')(knexfile.development);
 
-let insertedArtist;
-let insertedRecord;
-let exampleArtwork;
-let exampleArtist;
-
+/**
+ * Update Artwork by ID
+ *
+ * Updates an existing artwork in the 'artworks' table based on the provided ID.
+ *
+ * @route PUT /artworks/:id
+ * @param {string} id.path.required - The ID of the artwork to be updated.
+ * @param {Object} artwork.body.required - The updated artwork data.
+ * @param {string} artwork.title.required - The title of the artwork.
+ * @param {string} artwork.artist_uuid.required - The UUID of the artist associated with the artwork.
+ * @param {string} artwork.image_url.required - The URL of the artwork's image.
+ * @param {string} artwork.location_geohash.required - The geohash representing the location of the artwork.
+ * @returns {Object} 200 - The updated artwork object.
+ * @returns {Object} 400 - An error object if invalid data is provided or the ID is invalid.
+ * @returns {Object} 404 - An error object if the artwork with the provided ID does not exist.
+ * @returns {Object} 500 - An error object if the operation fails.
+ * @name UpdateArtwork
+ * @function
+ */
 describe('PUT /artworks/:id', () => {
   beforeAll(async () => {
     try {
+      // Setup: Inserting an example artist and artwork for testing
       exampleArtist = {
         uuid: uuidv4(),
         artist: 'Leonardo da Vinci',
@@ -36,6 +51,7 @@ describe('PUT /artworks/:id', () => {
   });
 
   afterAll(async () => {
+    // Cleanup: Delete the example artwork and artist from the database
     await db('artworks').where({ id: exampleArtwork.id }).del();
     await db('artists').where({ uuid: exampleArtist.uuid }).del();
     await db.destroy();

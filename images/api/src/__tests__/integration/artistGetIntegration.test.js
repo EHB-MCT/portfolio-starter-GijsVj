@@ -4,6 +4,20 @@ const { v4: uuidv4 } = require('uuid');
 const knexfile = require('../../db/knexfile.js');
 const db = require('knex')(knexfile.development);
 
+/**
+ * Get Artist by UUID
+ *
+ * Retrieves information about an artist based on the provided UUID.
+ *
+ * @route GET /artists/:uuid
+ * @param {string} uuid.path.required - The UUID of the artist.
+ * @returns {Object} 200 - An object containing details of the artist.
+ * @returns {Object} 404 - If the artist with the provided UUID is not found.
+ * @returns {Object} 400 - If an invalid UUID or numeric value is provided.
+ * @returns {Object} 500 - An error object if the operation fails.
+ * @name GetArtistByUUID
+ * @function
+ */
 let insertedArtist;
 let exampleArtist;
 let exampleArtwork;
@@ -45,6 +59,9 @@ describe('GET /artists/:uuid', () => {
     await db.destroy();
   });
 
+  /**
+   * Test for successful retrieval of an artist with a valid UUID.
+   */
   it('should return the correct artist when a valid UUID is provided', async () => {
     const validArtistUuid = insertedArtist[0].uuid;
 
@@ -66,6 +83,9 @@ describe('GET /artists/:uuid', () => {
     });
   });
 
+  /**
+   * Test for 404 status when a non-existing artist is provided.
+   */
   it('should return a 404 status when a non-existing artist is provided', async () => {
     const invalidArtistUuid = '550e8400-e29b-41d4-a716-446655440000';
 
@@ -79,6 +99,9 @@ describe('GET /artists/:uuid', () => {
     expect(dbRecord.length).toBe(0);
   });
 
+  /**
+   * Test for 400 status when an invalid UUID is provided.
+   */
   it('should return a 400 status when an invalid UUID is provided', async () => {
     const invalidArtistUuid = 'fsedrfesfwefrefsaefsaef';
 
@@ -89,6 +112,9 @@ describe('GET /artists/:uuid', () => {
     expect(response.status).toBe(400);
   });
 
+  /**
+   * Test for 400 status when a numeric value is provided.
+   */
   it('should return a 400 status when a numeric value is provided', async () => {
     const invalidArtistUuid = 12;
 

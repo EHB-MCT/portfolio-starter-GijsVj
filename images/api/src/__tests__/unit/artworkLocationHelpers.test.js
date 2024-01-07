@@ -1,5 +1,15 @@
 const { checkArtworkLocation } = require("../../helpers/artworkEndpointHelpers.js");
-
+/**
+ * Artwork Image URL Validation
+ *
+ * Validates artwork image URLs using the checkArtworkImage function.
+ *
+ * @route Artwork Image URL Validation
+ * @group Testing
+ * @param {string} imageUrl - The artwork URL to be validated.
+ * @name ArtworkImageURLValidation
+ * @function
+ */
 describe('Artwork Location Geohash Validation', () => {
   test('Valid geohash should return true', () => {
     const validGeohash = "u4pruydqqvj";
