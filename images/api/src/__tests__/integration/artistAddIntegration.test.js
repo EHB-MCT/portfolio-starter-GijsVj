@@ -53,7 +53,6 @@ describe('POST /artists/:uuid', () => {
       // Insert the artwork
       const insertedRecord = await db('artworks').insert({ ...exampleArtwork }).returning('*');
       exampleArtwork = insertedRecord[0];
-      console.log(exampleArtwork);
     } catch (error) {
       console.error('Error during setup:', error);
     }
